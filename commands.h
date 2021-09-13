@@ -1,5 +1,6 @@
 
 #include <WString.h>
+#include <Arduino.h>
 
 
 void printIpAdress(const IPAddress &address)
@@ -150,6 +151,7 @@ int command_relay(int argc, char** argv)
 {
     uint8_t relay = 0;
     uint8_t command = 0;
+    bool mqttSubmit;
     char topic[26];
     strcpy(topic, "relay/");
     strcat(topic, ethernetMacStr);
@@ -181,14 +183,17 @@ int command_relay(int argc, char** argv)
 
     if (relay != 0 && command != 0) {
         if (command == COMMAND_ON) {
+            mqttSubmit = digitalRead(relay) != HIGH;
             digitalWrite(relay, HIGH);
         } else if (command == COMMAND_OFF) {
+            mqttSubmit = digitalRead(relay) != LOW;
             digitalWrite(relay, LOW);
         } else if (command == COMMAND_TOGGLE) {
+            mqttSubmit = true;
             digitalWrite(relay, !digitalRead(relay));
         }
 
-        if (mqtt.connected()) {
+        if (mqtt.connected() && mqttSubmit) {
             mqtt.publish(topic, digitalRead(relay) == HIGH ? "ON" : "OFF");
         }
     }
@@ -211,6 +216,7 @@ int command_relay(int argc, char** argv)
 
 int command_reboot(int argc, char** argv)
 {
+    delay(50);
     asm("JMP 0");
     return SHELL_RET_SUCCESS;
 }
