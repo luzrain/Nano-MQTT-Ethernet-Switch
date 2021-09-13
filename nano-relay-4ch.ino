@@ -17,14 +17,16 @@ EthernetClient ethernetClientTcp;
 EthernetClient ethernetClientMqtt;
 PubSubClient mqtt;
 long lastReconnectAttempt = 0;
+long buttonScan = 0;
 EthernetLinkStatus ethernetLinkStatus;
 bool mqttIpIsSet;
 char ethernetMacStr[13];
 
 #include "relay.h"
-#include "commands.h"
 #include "shell_reader.h"
 #include "mqtt.h"
+#include "commands.h"
+#include "buttons.h"
 
 void interface_reboot()
 {
@@ -43,6 +45,10 @@ void setup()
     pinMode(RELAY2, OUTPUT);
     pinMode(RELAY3, OUTPUT);
     pinMode(RELAY4, OUTPUT);
+    pinMode(BUTTON1, INPUT_PULLUP);
+    pinMode(BUTTON2, INPUT_PULLUP);
+    pinMode(BUTTON3, INPUT_PULLUP);
+    pinMode(BUTTON4, INPUT_PULLUP);
 
     //Генерация строки с mac адресом
     for (uint8_t i = 0; i < 6; i++) {
@@ -111,11 +117,11 @@ void loop()
     Ethernet.maintain();
     interface_reboot();
 
-    //Reconnect to mqtt server only if mqtt ip adress in set
+    //Переподключение в mqtt серверу, раз в десять секунд
     if (ethernetLinkStatus == LinkON && mqttIpIsSet) {
         if (!mqtt.connected()) {
             long now = millis();
-            if (now - lastReconnectAttempt > 5000) {
+            if (now - lastReconnectAttempt > 10000) {
                 lastReconnectAttempt = now;
                 // Attempt to reconnect
                 if (mqtt_reconnect()) {
@@ -125,5 +131,12 @@ void loop()
         } else {
             mqtt.loop();
         }
+    }
+
+    //Сканирование кнопок
+    long nowButtonTime = millis();
+    if (nowButtonTime - buttonScan > 50) {
+        buttonScan = nowButtonTime;
+        scan_buttons();
     }
 }
