@@ -45,12 +45,12 @@ void setup()
     pinMode(RELAY4, OUTPUT);
 
     //Генерация строки с mac адресом
-    strcat(ethernetMacStr, ((ethernetMac[0] < 0x10 ? "0" : "") + String(ethernetMac[0], HEX)).c_str());
-    strcat(ethernetMacStr, ((ethernetMac[1] < 0x10 ? "0" : "") + String(ethernetMac[1], HEX)).c_str());
-    strcat(ethernetMacStr, ((ethernetMac[2] < 0x10 ? "0" : "") + String(ethernetMac[2], HEX)).c_str());
-    strcat(ethernetMacStr, ((ethernetMac[3] < 0x10 ? "0" : "") + String(ethernetMac[3], HEX)).c_str());
-    strcat(ethernetMacStr, ((ethernetMac[4] < 0x10 ? "0" : "") + String(ethernetMac[4], HEX)).c_str());
-    strcat(ethernetMacStr, ((ethernetMac[5] < 0x10 ? "0" : "") + String(ethernetMac[5], HEX)).c_str());
+    for (uint8_t i = 0; i < 6; i++) {
+	if (ethernetMac[i] < 0x10) {
+	    strcat(ethernetMacStr, "0");
+	}
+	strcat(ethernetMacStr, String(ethernetMac[i], HEX).c_str());
+    }
 
     ethernetLinkStatus = Ethernet.linkStatus();
     mqttIpIsSet = isIpSet(memory.getMqttIPAdress());
