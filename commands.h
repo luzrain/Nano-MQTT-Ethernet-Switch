@@ -33,36 +33,36 @@ int command_ip(int argc, char** argv)
 
     // Parse command arguments
     for(i = 0; i < argc; i++) {
-	if(i==0) {
-	    continue;
-	}
+        if(i==0) {
+            continue;
+        }
 
-	// DHCP
-	else if(!strcmp(argv[i], "-D")) {
-	    bool dhcp = !strcmp(argv[i + 1], "enable");
-	    memory.setDhcpActive(dhcp);
-	}
+        // DHCP
+        else if(!strcmp(argv[i], "-D")) {
+            bool dhcp = !strcmp(argv[i + 1], "enable");
+            memory.setDhcpActive(dhcp);
+        }
 
-	// ipv4 address
-	else if(!strcmp(argv[i], "-i")) {
-	    IPAddress ip;
-	    ip.fromString(argv[i + 1]);
-	    memory.setIPAddress(ip);
-	}
+        // ipv4 address
+        else if(!strcmp(argv[i], "-i")) {
+            IPAddress ip;
+            ip.fromString(argv[i + 1]);
+            memory.setIPAddress(ip);
+        }
 
-	// subnet mask
-	else if(!strcmp(argv[i], "-s")) {
-	    IPAddress ip;
-	    ip.fromString(argv[i + 1]);
-	    memory.setSubnetMaskIp(ip);
-	}
+        // subnet mask
+        else if(!strcmp(argv[i], "-s")) {
+            IPAddress ip;
+            ip.fromString(argv[i + 1]);
+            memory.setSubnetMaskIp(ip);
+        }
 
-	// gateway
-	else if(!strcmp(argv[i], "-g")) {
-	    IPAddress ip;
-	    ip.fromString(argv[i + 1]);
-	    memory.setGatewayIp(ip);
-	}
+        // gateway
+        else if(!strcmp(argv[i], "-g")) {
+            IPAddress ip;
+            ip.fromString(argv[i + 1]);
+            memory.setGatewayIp(ip);
+        }
     }
 
     shell_print_pm(PSTR("Usage: "));
@@ -101,21 +101,21 @@ int command_mqtt(int argc, char** argv)
 
     // Parse command arguments
     for(i = 0; i < argc; i++) {
-	if(i==0) {
-	    continue;
-	}
+        if(i==0) {
+            continue;
+        }
 
-	// MQTT server
-	else if(!strcmp(argv[i], "-s")) {
-	    IPAddress ip;
-	    ip.fromString(argv[i + 1]);
-	    memory.setMqttIPAdress(ip);
-	}
-    
-	// MQTT port
-	else if(!strcmp(argv[i], "-p")) {
-	    memory.setMqttPort(String(argv[i + 1]).toInt());
-	}
+        // MQTT server
+        else if(!strcmp(argv[i], "-s")) {
+            IPAddress ip;
+            ip.fromString(argv[i + 1]);
+            memory.setMqttIPAdress(ip);
+        }
+
+        // MQTT port
+        else if(!strcmp(argv[i], "-p")) {
+            memory.setMqttPort(String(argv[i + 1]).toInt());
+        }
     }
 
     char mqttPort[6];
@@ -156,41 +156,41 @@ int command_relay(int argc, char** argv)
     strcat(topic, "/relay");
 
     if (argc == 3) {
-	if (!strcmp(argv[1], "1")) {
-	    relay = RELAY1;
-	    strcat(topic, "1");
-	} else if(!strcmp(argv[1], "2")) {
-	    relay = RELAY2;
-	    strcat(topic, "2");
-	} else if(!strcmp(argv[1], "3")) {
-	    relay = RELAY3;
-	    strcat(topic, "3");
-	} else if(!strcmp(argv[1], "4")) {
-	    relay = RELAY4;
-	    strcat(topic, "4");
-	}
-    
-	if (!strcmp(argv[2], "ON")) {
-	    command = COMMAND_ON;
-	} else if(!strcmp(argv[2], "OFF")) {
-	    command = COMMAND_OFF;
-	} else if(!strcmp(argv[2], "TOGGLE")) {
-	    command = COMMAND_TOGGLE;
-	}
+        if (!strcmp(argv[1], "1")) {
+            relay = RELAY1;
+            strcat(topic, "1");
+        } else if(!strcmp(argv[1], "2")) {
+            relay = RELAY2;
+            strcat(topic, "2");
+        } else if(!strcmp(argv[1], "3")) {
+            relay = RELAY3;
+            strcat(topic, "3");
+        } else if(!strcmp(argv[1], "4")) {
+            relay = RELAY4;
+            strcat(topic, "4");
+        }
+
+        if (!strcmp(argv[2], "ON")) {
+            command = COMMAND_ON;
+        } else if(!strcmp(argv[2], "OFF")) {
+            command = COMMAND_OFF;
+        } else if(!strcmp(argv[2], "TOGGLE")) {
+            command = COMMAND_TOGGLE;
+        }
     }
 
     if (relay != 0 && command != 0) {
-	if (command == COMMAND_ON) {
-	    digitalWrite(relay, HIGH);
-	} else if (command == COMMAND_OFF) {
-	    digitalWrite(relay, LOW);
-	} else if (command == COMMAND_TOGGLE) {
-	    digitalWrite(relay, !digitalRead(relay));
-	}
+        if (command == COMMAND_ON) {
+            digitalWrite(relay, HIGH);
+        } else if (command == COMMAND_OFF) {
+            digitalWrite(relay, LOW);
+        } else if (command == COMMAND_TOGGLE) {
+            digitalWrite(relay, !digitalRead(relay));
+        }
 
-	if (mqtt.connected()) {
-	    mqtt.publish(topic, digitalRead(relay) == HIGH ? "ON" : "OFF");
-	}
+        if (mqtt.connected()) {
+            mqtt.publish(topic, digitalRead(relay) == HIGH ? "ON" : "OFF");
+        }
     }
 
     shell_print_pm(PSTR("Usage: "));

@@ -101,7 +101,7 @@ uint16_t Memory::getMqttPort()
     uint16_t port;
     EEPROM.get(MQTT_PORT_OFFSET, port);
     if (port == 0 || port == 65535) {
-	port = 1883;
+        port = 1883;
     }
     return port;
 }

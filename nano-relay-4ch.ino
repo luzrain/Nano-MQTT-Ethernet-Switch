@@ -28,7 +28,7 @@ char ethernetMacStr[13];
 
 void interface_reboot()
 {
-    EthernetLinkStatus currentEthernetLinkStatus = Ethernet.linkStatus();
+	EthernetLinkStatus currentEthernetLinkStatus = Ethernet.linkStatus();
     if (currentEthernetLinkStatus != ethernetLinkStatus) {
         asm("JMP 0");
     }
@@ -46,10 +46,10 @@ void setup()
 
     //Генерация строки с mac адресом
     for (uint8_t i = 0; i < 6; i++) {
-	if (ethernetMac[i] < 0x10) {
-	    strcat(ethernetMacStr, "0");
-	}
-	strcat(ethernetMacStr, String(ethernetMac[i], HEX).c_str());
+        if (ethernetMac[i] < 0x10) {
+            strcat(ethernetMacStr, "0");
+        }
+        strcat(ethernetMacStr, String(ethernetMac[i], HEX).c_str());
     }
 
     ethernetLinkStatus = Ethernet.linkStatus();
@@ -57,44 +57,46 @@ void setup()
 
     //Network init
     if (ethernetLinkStatus == LinkON) {
-	Serial.print(F("Getting ip from "));
-	//DHCP
-	if (memory.getDhcpActive()) {
-	    Serial.println(F("DHCP server..."));
-	    while(Ethernet.begin(ethernetMac) == 0) {
-		interface_reboot();
-		Serial.println(F("Retry..."));
-	    }
-	//Static ip address
-	} else {
-	    Serial.println(F("memory..."));
-	    Ethernet.begin(ethernetMac, memory.getIPAddress(), memory.getGatewayIp(), memory.getGatewayIp(), memory.getSubnetMaskIp());
-	}
+        Serial.print(F("Getting ip from "));
 
-	delay(300);
+        //DHCP
+        if (memory.getDhcpActive()) {
+            Serial.println(F("DHCP server..."));
+            while(Ethernet.begin(ethernetMac) == 0) {
+                interface_reboot();
+                Serial.println(F("Retry..."));
+            }
+        //Static ip address
+        } else {
+            Serial.println(F("memory..."));
+            Ethernet.begin(ethernetMac, memory.getIPAddress(), memory.getGatewayIp(), memory.getGatewayIp(), memory.getSubnetMaskIp());
+        }
+
+        delay(300);
     } else {
-	Serial.println(F("No link..."));
+        Serial.println(F("No link..."));
     }
 
     //Start network services only if Link is active
     if (ethernetLinkStatus == LinkON) {
-	// Start TCP Server on port 23
-	ethernetServerTcp.begin();
+        // Start TCP Server on port 23
+        ethernetServerTcp.begin();
 
-	mqtt.setClient(ethernetClientMqtt);
-	mqtt.setServer(memory.getMqttIPAdress(), memory.getMqttPort());
-	mqtt.setCallback(mqtt_callback);
-	lastReconnectAttempt = 0;
+        mqtt.setClient(ethernetClientMqtt);
+        mqtt.setServer(memory.getMqttIPAdress(), memory.getMqttPort());
+        mqtt.setCallback(mqtt_callback);
+        lastReconnectAttempt = 0;
 
-	Serial.print(F("Start telnet server on "));
-	Serial.print(Ethernet.localIP());
-	Serial.println();
-	shell_init(shell_reader_tcp, shell_writer_tcp, 0);
+        Serial.print(F("Start telnet server on "));
+        Serial.print(Ethernet.localIP());
+        Serial.println();
+        shell_init(shell_reader_tcp, shell_writer_tcp, 0);
     } else {
-	Serial.println(F("Start uart server..."));
-	shell_init(shell_reader_uart, shell_writer_uart, 0);
+        Serial.println(F("Start uart server..."));
+        shell_init(shell_reader_uart, shell_writer_uart, 0);
     }
 
+    //Регистрация консольных комманд
     shell_register(command_help, PSTR("?"));
     shell_register(command_ip, PSTR("ip"));
     shell_register(command_mqtt, PSTR("mqtt"));
@@ -111,17 +113,17 @@ void loop()
 
     //Reconnect to mqtt server only if mqtt ip adress in set
     if (ethernetLinkStatus == LinkON && mqttIpIsSet) {
-	if (!mqtt.connected()) {
-	    long now = millis();
-	    if (now - lastReconnectAttempt > 5000) {
-		lastReconnectAttempt = now;
-		// Attempt to reconnect
-		if (mqtt_reconnect()) {
-		    lastReconnectAttempt = 0;
-		}
-	    }
-	} else {
-	    mqtt.loop();
-	}
+        if (!mqtt.connected()) {
+            long now = millis();
+            if (now - lastReconnectAttempt > 5000) {
+                lastReconnectAttempt = now;
+                // Attempt to reconnect
+                if (mqtt_reconnect()) {
+                    lastReconnectAttempt = 0;
+                }
+            }
+        } else {
+            mqtt.loop();
+        }
     }
 }
