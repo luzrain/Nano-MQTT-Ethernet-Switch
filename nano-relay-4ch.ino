@@ -5,8 +5,8 @@
 #include <UIPEthernet.h>
 #include <PubSubClient.h>
 #include "src/Shell-1.2.0/Shell.h"
-#include "memory.h"
-#include "ip_tools.h"
+#include "src/memory.h"
+#include "src/ip_tools.h"
 
 //MAC адрес устройства
 static uint8_t ethernetMac[6] = {0xda, 0x20, 0x3a, 0x22, 0xf8, 0x01};
@@ -22,11 +22,11 @@ EthernetLinkStatus ethernetLinkStatus;
 bool mqttIpIsSet;
 char ethernetMacStr[13];
 
-#include "relay.h"
-#include "shell_reader.h"
-#include "mqtt.h"
-#include "commands.h"
-#include "buttons.h"
+#include "src/relay.h"
+#include "src/shell_reader.h"
+#include "src/mqtt.h"
+#include "src/commands.h"
+#include "src/buttons.h"
 
 void interface_reboot()
 {
