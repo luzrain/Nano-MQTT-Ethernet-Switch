@@ -22,7 +22,7 @@ int command_help(int argc, char** argv)
 {
     shell_println_pm(PSTR("System commands"));
     shell_println_pm(PSTR("---------------"));
-    shell_println_pm(PSTR("?\tip\tmqtt\trelay\treboot"));
+    shell_println_pm(PSTR("?\tip\tmqtt\tstatus\treboot"));
 
     return SHELL_RET_SUCCESS;
 }
@@ -67,6 +67,7 @@ int command_ip(int argc, char** argv)
 
     shell_print_pm(PSTR("Usage: "));
     shell_println_pm(PSTR("ip [-D <enable | disable>] [-i <ipv4 address>] [-s <subnet mask>] [-g <gateway ip>]"));
+
     shell_println_pm(PSTR("\nActive IPv4 settings"));
     shell_println_pm(PSTR("--------------------"));
     shell_print_pm(PSTR("  Active IPv4 address:\t\t"));
@@ -78,6 +79,7 @@ int command_ip(int argc, char** argv)
     shell_print_pm(PSTR("  Active IPv4 gateway:\t\t"));
     printIpAdress(Ethernet.gatewayIP());
     shell_println_pm(PSTR(""));
+
     shell_println_pm(PSTR("\nManually configured IPv4 settings"));
     shell_println_pm(PSTR("---------------------------------"));
     shell_print_pm(PSTR("  DHCP:\t\t\t"));
@@ -117,8 +119,8 @@ int command_mqtt(int argc, char** argv)
             memory.setMqttPort(String(argv[i + 1]).toInt());
         }
 
-        // Hostname
-        else if(!strcmp(argv[i], "-h")) {
+        // Topic
+        else if(!strcmp(argv[i], "-t")) {
             memory.setName(argv[i + 1]);
         }
     }
@@ -127,11 +129,9 @@ int command_mqtt(int argc, char** argv)
     utoa(memory.getMqttPort(), mqttPort, 10);
 
     shell_print_pm(PSTR("Usage: "));
-    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>] [-h <hostname>]"));
+    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>] [-t <topic>]"));
     shell_println_pm(PSTR("\nMQTT settings"));
     shell_println_pm(PSTR("--------------"));
-    shell_print_pm(PSTR("  Hostname: \t\t"));
-    shell_println(memory.getName());
     shell_print_pm(PSTR("  MQTT Server:\t\t"));
     printIpAdress(memory.getMqttIPAdress());
     shell_print_pm(PSTR(":"));
@@ -149,7 +149,7 @@ int command_mqtt(int argc, char** argv)
     return SHELL_RET_SUCCESS;
 }
 
-int command_relay(int argc, char** argv)
+int command_status(int argc, char** argv)
 {
     uint8_t relay = 0;
     uint8_t command = 0;
@@ -167,8 +167,8 @@ int command_relay(int argc, char** argv)
             topic = mqtt_topic("2");
         } else if(!strcmp(argv[1], "3")) {
             relay = RELAY3;
-            topic = mqtt_topic("1");
-        } else if(!strcmp(argv[1], "3")) {
+            topic = mqtt_topic("3");
+        } else if(!strcmp(argv[1], "4")) {
             relay = RELAY4;
             topic = mqtt_topic("4");
         }
@@ -200,7 +200,7 @@ int command_relay(int argc, char** argv)
     }
 
     shell_print_pm(PSTR("Usage: "));
-    shell_println_pm(PSTR("relay [<1|2|3|4> <ON|OFF|TOGGLE>]"));
+    shell_println_pm(PSTR("status [<1|2|3|4> <ON|OFF|TOGGLE>]"));
     shell_println_pm(PSTR("\nRelay status"));
     shell_println_pm(PSTR("------------"));
     shell_print_pm(PSTR("  Relay 1:\t"));

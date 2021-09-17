@@ -41,13 +41,13 @@
 /**
  * Defines the maximum number of commands that can be registered
  */
-#define CONFIG_SHELL_MAX_COMMANDS		5
+#define CONFIG_SHELL_MAX_COMMANDS		6
 #endif
 #if !defined(CONFIG_SHELL_MAX_INPUT)
 /**
  * Defines the maximum characters that the input buffer can accept
  */
-#define CONFIG_SHELL_MAX_INPUT			70
+#define CONFIG_SHELL_MAX_INPUT			80
 #endif
 #if !defined(CONFIG_SHELL_MAX_COMMAND_ARGS)
 /**

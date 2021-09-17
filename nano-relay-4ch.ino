@@ -94,7 +94,7 @@ void setup()
     shell_register(command_help, PSTR("?"));
     shell_register(command_ip, PSTR("ip"));
     shell_register(command_mqtt, PSTR("mqtt"));
-    shell_register(command_relay, PSTR("relay"));
+    shell_register(command_status, PSTR("status"));
     shell_register(command_reboot, PSTR("reboot"));
 }
 
