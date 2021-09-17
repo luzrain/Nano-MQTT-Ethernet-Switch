@@ -4,9 +4,7 @@
 #include "src/Shell-1.2.0/Shell.h"
 #include "src/memory.h"
 #include "src/ip_tools.h"
-
-//MAC адрес устройства
-static uint8_t ethernetMac[6] = {0xda, 0x20, 0x3a, 0x22, 0xf8, 0x01};
+#include "settings.h"
 
 Memory memory;
 EthernetServer ethernetServerTcp(23);
@@ -18,9 +16,8 @@ long buttonScan = 0;
 EthernetLinkStatus ethernetLinkStatus;
 bool mqttIpIsSet;
 
-#include "src/relay.h"
 #include "src/shell_reader.h"
-#include "src/mqtt.h"
+#include "src/control.h"
 #include "src/commands.h"
 #include "src/buttons.h"
 

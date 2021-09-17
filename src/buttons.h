@@ -1,8 +1,3 @@
-#define BUTTON1 5
-#define BUTTON2 4
-#define BUTTON3 3
-#define BUTTON4 2
-
 #define BUTTON1_FLAG 0b10000000
 #define BUTTON2_FLAG 0b01000000
 #define BUTTON3_FLAG 0b00100000
@@ -47,34 +42,25 @@ void scan_buttons()
     }
 
     uint8_t relay;
-    char *topic;
 
     if (buttonState1 == BUTTON1_FLAG) {
         relay = RELAY1;
-        topic = mqtt_topic("1");
     }
 
     if (buttonState1 == BUTTON2_FLAG) {
         relay = RELAY2;
-        topic = mqtt_topic("2");
     }
 
     if (buttonState1 == BUTTON3_FLAG) {
         relay = RELAY3;
-        topic = mqtt_topic("3");
     }
 
     if (buttonState1 == BUTTON4_FLAG) {
         relay = RELAY4;
-        topic = mqtt_topic("4");
     }
 
     if (buttonState1 == BUTTON1_FLAG || buttonState1 == BUTTON2_FLAG || buttonState1 == BUTTON3_FLAG || buttonState1 == BUTTON4_FLAG) {
-        digitalWrite(relay, !digitalRead(relay));
-
-        if (mqtt.connected()) {
-            mqtt.publish(topic, digitalRead(relay) == HIGH ? "ON" : "OFF");
-        }
+        relay_switch(relay, COMMAND_TOGGLE);
     }
 
     buttonState2 = buttonState1;

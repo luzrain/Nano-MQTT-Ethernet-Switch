@@ -129,22 +129,15 @@ int command_mqtt(int argc, char** argv)
     utoa(memory.getMqttPort(), mqttPort, 10);
 
     shell_print_pm(PSTR("Usage: "));
-    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>] [-t <topic>]"));
+    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>] [-t <topic prefix>]"));
     shell_println_pm(PSTR("\nMQTT settings"));
     shell_println_pm(PSTR("--------------"));
     shell_print_pm(PSTR("  MQTT Server:\t\t"));
     printIpAdress(memory.getMqttIPAdress());
     shell_print_pm(PSTR(":"));
     shell_println(mqttPort);
-    shell_print_pm(PSTR("  Relay 1 topic: \t"));
-    shell_println(mqtt_topic("1"));
-    shell_print_pm(PSTR("  Relay 2 topic: \t"));
-    shell_println(mqtt_topic("2"));
-    shell_print_pm(PSTR("  Relay 3 topic: \t"));
-    shell_println(mqtt_topic("3"));
-    shell_print_pm(PSTR("  Relay 4 topic: \t"));
-    shell_println(mqtt_topic("4"));
-    shell_println_pm(PSTR("  Payload: \t\t<ON|OFF|TOGGLE>"));
+    shell_print_pm(PSTR("  Topic prefix: \t"));
+    shell_println(memory.getName());
 
     return SHELL_RET_SUCCESS;
 }
@@ -153,24 +146,18 @@ int command_status(int argc, char** argv)
 {
     uint8_t relay = 0;
     uint8_t command = 0;
-    bool mqttSubmit;
-    char * topic;
     const char * on_txt = PSTR("ON");
     const char * off_txt = PSTR("OFF");
 
     if (argc == 3) {
         if (!strcmp(argv[1], "1")) {
             relay = RELAY1;
-            topic = mqtt_topic("1");
         } else if(!strcmp(argv[1], "2")) {
             relay = RELAY2;
-            topic = mqtt_topic("2");
         } else if(!strcmp(argv[1], "3")) {
             relay = RELAY3;
-            topic = mqtt_topic("3");
         } else if(!strcmp(argv[1], "4")) {
             relay = RELAY4;
-            topic = mqtt_topic("4");
         }
 
         if (!strcmp(argv[2], "ON")) {
@@ -183,20 +170,7 @@ int command_status(int argc, char** argv)
     }
 
     if (relay != 0 && command != 0) {
-        if (command == COMMAND_ON) {
-            mqttSubmit = digitalRead(relay) != HIGH;
-            digitalWrite(relay, HIGH);
-        } else if (command == COMMAND_OFF) {
-            mqttSubmit = digitalRead(relay) != LOW;
-            digitalWrite(relay, LOW);
-        } else if (command == COMMAND_TOGGLE) {
-            mqttSubmit = true;
-            digitalWrite(relay, !digitalRead(relay));
-        }
-
-        if (mqtt.connected() && mqttSubmit) {
-            mqtt.publish(topic, digitalRead(relay) == HIGH ? "ON" : "OFF");
-        }
+        relay_switch(relay, command);
     }
 
     shell_print_pm(PSTR("Usage: "));
@@ -204,13 +178,13 @@ int command_status(int argc, char** argv)
     shell_println_pm(PSTR("\nRelay status"));
     shell_println_pm(PSTR("------------"));
     shell_print_pm(PSTR("  Relay 1:\t"));
-    shell_println_pm(digitalRead(RELAY1) == HIGH ? on_txt : off_txt);
+    shell_println_pm(relay_status(RELAY1) ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 2:\t"));
-    shell_println_pm(digitalRead(RELAY2) == HIGH ? on_txt : off_txt);
+    shell_println_pm(relay_status(RELAY2) ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 3:\t"));
-    shell_println_pm(digitalRead(RELAY3) == HIGH ? on_txt : off_txt);
+    shell_println_pm(relay_status(RELAY3) ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 4:\t"));
-    shell_println_pm(digitalRead(RELAY4) == HIGH ? on_txt : off_txt);
+    shell_println_pm(relay_status(RELAY4) ? on_txt : off_txt);
 
     return SHELL_RET_SUCCESS;
 }
