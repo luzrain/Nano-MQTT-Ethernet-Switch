@@ -1,6 +1,3 @@
-//
-//
-
 #include <Arduino.h>
 #include <UIPEthernet.h>
 #include <PubSubClient.h>
@@ -20,7 +17,6 @@ long lastReconnectAttempt = 0;
 long buttonScan = 0;
 EthernetLinkStatus ethernetLinkStatus;
 bool mqttIpIsSet;
-char ethernetMacStr[13];
 
 #include "src/relay.h"
 #include "src/shell_reader.h"
@@ -49,14 +45,6 @@ void setup()
     pinMode(BUTTON2, INPUT_PULLUP);
     pinMode(BUTTON3, INPUT_PULLUP);
     pinMode(BUTTON4, INPUT_PULLUP);
-
-    //Генерация строки с mac адресом
-    for (uint8_t i = 0; i < 6; i++) {
-        if (ethernetMac[i] < 0x10) {
-            strcat(ethernetMacStr, "0");
-        }
-        strcat(ethernetMacStr, String(ethernetMac[i], HEX).c_str());
-    }
 
     ethernetLinkStatus = Ethernet.linkStatus();
     mqttIpIsSet = isIpSet(memory.getMqttIPAdress());

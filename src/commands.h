@@ -2,7 +2,6 @@
 #include <WString.h>
 #include <Arduino.h>
 
-
 void printIpAdress(const IPAddress &address)
 {
     char buf[4];
@@ -117,31 +116,34 @@ int command_mqtt(int argc, char** argv)
         else if(!strcmp(argv[i], "-p")) {
             memory.setMqttPort(String(argv[i + 1]).toInt());
         }
+
+        // Hostname
+        else if(!strcmp(argv[i], "-h")) {
+            memory.setName(argv[i + 1]);
+        }
     }
 
     char mqttPort[6];
     utoa(memory.getMqttPort(), mqttPort, 10);
 
     shell_print_pm(PSTR("Usage: "));
-    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>]"));
+    shell_println_pm(PSTR("mqtt [-s <ipv4 address>] [-p <port>] [-h <hostname>]"));
     shell_println_pm(PSTR("\nMQTT settings"));
     shell_println_pm(PSTR("--------------"));
+    shell_print_pm(PSTR("  Hostname: \t\t"));
+    shell_println(memory.getName());
     shell_print_pm(PSTR("  MQTT Server:\t\t"));
     printIpAdress(memory.getMqttIPAdress());
     shell_print_pm(PSTR(":"));
     shell_println(mqttPort);
-    shell_print_pm(PSTR("  Relay 1 topic: \trelay/"));
-    shell_print(ethernetMacStr);
-    shell_println_pm(PSTR("/relay1"));
-    shell_print_pm(PSTR("  Relay 2 topic: \trelay/"));
-    shell_print(ethernetMacStr);
-    shell_println_pm(PSTR("/relay2"));
-    shell_print_pm(PSTR("  Relay 3 topic: \trelay/"));
-    shell_print(ethernetMacStr);
-    shell_println_pm(PSTR("/relay3"));
-    shell_print_pm(PSTR("  Relay 4 topic: \trelay/"));
-    shell_print(ethernetMacStr);
-    shell_println_pm(PSTR("/relay4"));
+    shell_print_pm(PSTR("  Relay 1 topic: \t"));
+    shell_println(mqtt_topic("1"));
+    shell_print_pm(PSTR("  Relay 2 topic: \t"));
+    shell_println(mqtt_topic("2"));
+    shell_print_pm(PSTR("  Relay 3 topic: \t"));
+    shell_println(mqtt_topic("3"));
+    shell_print_pm(PSTR("  Relay 4 topic: \t"));
+    shell_println(mqtt_topic("4"));
     shell_println_pm(PSTR("  Payload: \t\t<ON|OFF|TOGGLE>"));
 
     return SHELL_RET_SUCCESS;
@@ -152,24 +154,23 @@ int command_relay(int argc, char** argv)
     uint8_t relay = 0;
     uint8_t command = 0;
     bool mqttSubmit;
-    char topic[26];
-    strcpy(topic, "relay/");
-    strcat(topic, ethernetMacStr);
-    strcat(topic, "/relay");
+    char * topic;
+    const char * on_txt = PSTR("ON");
+    const char * off_txt = PSTR("OFF");
 
     if (argc == 3) {
         if (!strcmp(argv[1], "1")) {
             relay = RELAY1;
-            strcat(topic, "1");
+            topic = mqtt_topic("1");
         } else if(!strcmp(argv[1], "2")) {
             relay = RELAY2;
-            strcat(topic, "2");
+            topic = mqtt_topic("2");
         } else if(!strcmp(argv[1], "3")) {
             relay = RELAY3;
-            strcat(topic, "3");
-        } else if(!strcmp(argv[1], "4")) {
+            topic = mqtt_topic("1");
+        } else if(!strcmp(argv[1], "3")) {
             relay = RELAY4;
-            strcat(topic, "4");
+            topic = mqtt_topic("4");
         }
 
         if (!strcmp(argv[2], "ON")) {
@@ -203,13 +204,13 @@ int command_relay(int argc, char** argv)
     shell_println_pm(PSTR("\nRelay status"));
     shell_println_pm(PSTR("------------"));
     shell_print_pm(PSTR("  Relay 1:\t"));
-    shell_println_pm(digitalRead(RELAY1) == HIGH ? PSTR("ON") : PSTR("OFF"));
+    shell_println_pm(digitalRead(RELAY1) == HIGH ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 2:\t"));
-    shell_println_pm(digitalRead(RELAY2) == HIGH ? PSTR("ON") : PSTR("OFF"));
+    shell_println_pm(digitalRead(RELAY2) == HIGH ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 3:\t"));
-    shell_println_pm(digitalRead(RELAY3) == HIGH ? PSTR("ON") : PSTR("OFF"));
+    shell_println_pm(digitalRead(RELAY3) == HIGH ? on_txt : off_txt);
     shell_print_pm(PSTR("  Relay 4:\t"));
-    shell_println_pm(digitalRead(RELAY4) == HIGH ? PSTR("ON") : PSTR("OFF"));
+    shell_println_pm(digitalRead(RELAY4) == HIGH ? on_txt : off_txt);
 
     return SHELL_RET_SUCCESS;
 }

@@ -6,6 +6,7 @@
 #define GATEWAY_OFFSET 9 //4 byte
 #define MQTT_IP_OFFSET 13 //4 byte
 #define MQTT_PORT_OFFSET 17 //2 byte
+#define NAME_OFFSET 19 //33 byte
 
 class Memory {
     public:
@@ -21,6 +22,8 @@ class Memory {
     IPAddress getMqttIPAdress();
     void setMqttPort(uint16_t port);
     uint16_t getMqttPort();
+    void setName(char * data);
+    char * getName();
 };
 
 bool Memory::setDhcpActive(bool isActive)
@@ -104,4 +107,41 @@ uint16_t Memory::getMqttPort()
         port = 1883;
     }
     return port;
+}
+
+void Memory::setName(char * data)
+{
+    uint8_t size = strlen((char *) data);
+
+    if (size > 32) {
+        size = 32;
+    }
+
+    for (uint8_t i=0; i < size; i++) {
+        EEPROM.write(NAME_OFFSET + i, data[i]);
+    }
+
+    EEPROM.write(NAME_OFFSET + size, '\0');
+}
+
+char * Memory::getName()
+{
+    static char data[32]; //Max 32 Bytes
+    uint8_t len = 0;
+    char k;
+
+    do {
+        k = EEPROM.read(NAME_OFFSET + len);
+        if (len == 0 && (k == 0xFFFF || k == 0 || k == 20)) {
+            break;
+        }
+        data[len++] = k;
+    } while (k != '\0' && len < 32);
+
+    //Генерация строки по умолчанию
+    if (data[0] == 0) {
+        strcat(data, "nano_relay");
+    }
+
+    return data;
 }

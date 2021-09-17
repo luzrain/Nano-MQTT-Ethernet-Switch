@@ -47,29 +47,26 @@ void scan_buttons()
     }
 
     uint8_t relay;
-    char topic[26];
-    strcpy(topic, "relay/");
-    strcat(topic, ethernetMacStr);
-    strcat(topic, "/relay");
+    char *topic;
 
     if (buttonState1 == BUTTON1_FLAG) {
         relay = RELAY1;
-        strcat(topic, "1");
+        topic = mqtt_topic("1");
     }
 
     if (buttonState1 == BUTTON2_FLAG) {
         relay = RELAY2;
-        strcat(topic, "2");
+        topic = mqtt_topic("2");
     }
 
     if (buttonState1 == BUTTON3_FLAG) {
         relay = RELAY3;
-        strcat(topic, "3");
+        topic = mqtt_topic("3");
     }
 
     if (buttonState1 == BUTTON4_FLAG) {
         relay = RELAY4;
-        strcat(topic, "4");
+        topic = mqtt_topic("4");
     }
 
     if (buttonState1 == BUTTON1_FLAG || buttonState1 == BUTTON2_FLAG || buttonState1 == BUTTON3_FLAG || buttonState1 == BUTTON4_FLAG) {

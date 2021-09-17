@@ -1,14 +1,28 @@
+char * mqtt_topic(char * num)
+{
+    static char mqttTopicBuffer[38];
+    memset(mqttTopicBuffer, 0, sizeof(mqttTopicBuffer));
+    strcat(mqttTopicBuffer, memory.getName());
+    strcat(mqttTopicBuffer, "/relay");
+    strcat(mqttTopicBuffer, num);
+    return mqttTopicBuffer;
+}
 
 boolean mqtt_reconnect()
 {
-    char buf[20];
-    strcpy(buf, "relay/");
-    strcat(buf, ethernetMacStr);
-    strcat(buf, "/#");
-    if (mqtt.connect("relay")) {
-        mqtt.subscribe(buf);
+    char lwtTopicBuffer[36];
+    strcat(lwtTopicBuffer, memory.getName());
+    strcat(lwtTopicBuffer, "/LWT");
+
+    if (mqtt.connect(memory.getName(), lwtTopicBuffer, 0, false, "offline")) {
+        mqtt.subscribe(mqtt_topic("1"));
+        mqtt.subscribe(mqtt_topic("2"));
+        mqtt.subscribe(mqtt_topic("3"));
+        mqtt.subscribe(mqtt_topic("4"));
+        mqtt.publish(lwtTopicBuffer, "online");
         Serial.println(F("Connected to MQTT..."));
     }
+
     return mqtt.connected();
 }
 
@@ -16,15 +30,14 @@ void mqtt_callback(char* topic, byte* payload, unsigned int payloadLength)
 {
     uint8_t relay;
     uint8_t command;
-    uint8_t topicLength = strlen(topic);
 
-    if (topicLength == 25 && strstr(topic, "relay1")) {
+    if (strcmp(topic, mqtt_topic("1")) == 0) {
         relay = RELAY1;
-    } else if(topicLength == 25 && strstr(topic, "relay2")) {
+    } else if(strcmp(topic, mqtt_topic("2")) == 0) {
         relay = RELAY2;
-    } else if(topicLength == 25 && strstr(topic, "relay3")) {
+    } else if(strcmp(topic, mqtt_topic("3")) == 0) {
         relay = RELAY3;
-    } else if(topicLength == 25 && strstr(topic, "relay4")) {
+    } else if(strcmp(topic, mqtt_topic("4")) == 0) {
         relay = RELAY4;
     } else {
         return;
