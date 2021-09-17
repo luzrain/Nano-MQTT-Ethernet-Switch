@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <UIPEthernet.h>
-#include <PubSubClient.h>
+#include "src/PubSubClient/PubSubClient.h"
+#include "src/UIPEthernet/UIPEthernet.h"
 #include "src/Shell-1.2.0/Shell.h"
 #include "src/memory.h"
 #include "src/ip_tools.h"
