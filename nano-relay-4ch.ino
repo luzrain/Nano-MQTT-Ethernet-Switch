@@ -42,6 +42,8 @@ void setup()
     pinMode(BUTTON2, INPUT_PULLUP);
     pinMode(BUTTON3, INPUT_PULLUP);
     pinMode(BUTTON4, INPUT_PULLUP);
+    pinMode(MQTT_LED, OUTPUT);
+    digitalWrite(MQTT_LED, LOW);
 
     ethernetLinkStatus = Ethernet.linkStatus();
     mqttIpIsSet = isIpSet(memory.getMqttIPAdress());
@@ -111,6 +113,9 @@ void loop()
                 // Attempt to reconnect
                 if (mqtt_reconnect()) {
                     lastReconnectAttempt = 0;
+                    digitalWrite(MQTT_LED, HIGH);
+                } else {
+                    digitalWrite(MQTT_LED, LOW);
                 }
             }
         } else {

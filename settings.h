@@ -12,3 +12,6 @@ static uint8_t ethernetMac[6] = {0xda, 0x20, 0x3a, 0x22, 0xf8, 0x01};
 #define BUTTON2 4
 #define BUTTON3 3
 #define BUTTON4 2
+
+//Пин статуса MQTT
+#define MQTT_LED A1
