@@ -2,10 +2,10 @@
 static uint8_t ethernetMac[6] = {0xda, 0x20, 0x3a, 0x22, 0xf8, 0x01};
 
 //Пины реле
-#define RELAY1 7
-#define RELAY2 6
-#define RELAY3 5
-#define RELAY4 4
+#define RELAY1 4
+#define RELAY2 5
+#define RELAY3 6
+#define RELAY4 7
 
 //Пин статуса MQTT
 #define MQTT_LED 3
